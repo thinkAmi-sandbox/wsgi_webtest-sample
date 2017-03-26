@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>テストタイトル</title>
+    </head>
+    <body>
+        <h1>テスト掲示板</h1>
+        <form action="/" method="POST">
+            タイトル： <input type="text" name="title" size="60"><br>
+            ハンドル名： <input type="text" name="handle"><br>
+            <textarea name="message" rows="4" cols="60"></textarea>
+            <input type="submit">
+        </form>
+        <hr>
+
+        {% for m in messages %}
+            <p>
+                <span class="title">「{{ m.title }}」</span>&nbsp;&nbsp;
+                <span class="handle">{{ m.handle }} さん</span>&nbsp;&nbsp
+                <span class="created_at">{{ m.created_at }}</span>
+            </p>
+           <p class="message">{{ m.message }}</p>
+          <hr>
+        {% endfor %}
+
+    </body>
+</html>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>テストタイトル</title>
+    </head>
+    <body>
+        <h1>テスト掲示板</h1>
+        <form action="/" method="POST">
+            タイトル： <input type="text" name="title" size="60"><br>
+            ハンドル名： <input type="text" name="handle"><br>
+            <textarea name="message" rows="4" cols="60"></textarea><br>
+            <input type="submit">
+        </form>
+        <hr>
+
+        {% if message %}
+            <p>
+                <span class="title">「{{ message.title }}」</span>&nbsp;&nbsp;
+                <span class="handle">{{ message.handle }} さん</span>&nbsp;&nbsp
+                <span class="created_at">{{ message.created_at }}</span>
+            </p>
+            <p class="message">{{ message.message }}</p>
+            <hr>
+        {% endif %}
+    </body>
+</html>
