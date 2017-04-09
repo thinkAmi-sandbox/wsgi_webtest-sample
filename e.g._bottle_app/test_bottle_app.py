@@ -4,7 +4,6 @@ import bottle_app
 
 
 class Test_bottle_app(object):
-    @pytest.mark.xfail
     def test_form_submit(self):
         """GETして、formに入力し、submitボタンを押すテスト"""
         sut = TestApp(bottle_app.app)
@@ -15,9 +14,9 @@ class Test_bottle_app(object):
         form['message'] = 'メッセージ'
         actual = form.submit()
 
-        # https://github.com/Pylons/webtest/issues/150
         print(actual)
-        """結果：文字化けしている
+        """bottleでrequest.forms.get()を使った時の結果：
+        文字化けしている
         <p>
             <span class="title">「ãã 」</span>&nbsp;&nbsp;
             <span class="handle">ã さん</span>&nbsp;&nbsp
@@ -25,16 +24,24 @@ class Test_bottle_app(object):
         </p>
         <p class="message">ã¡ãã»ã¼ã¸</p>
         """
+        """bottleでrequest.forms.getunicode()を使った時の結果：
+        文字化けしない
+        <p>
+            <span class="title">「ハム」</span>&nbsp;&nbsp;
+            <span class="handle">あ さん</span>&nbsp;&nbsp
+            <span class="created_at">2017-04-09 12:24:04.636758</span>
+        </p>
+        <p class="message">メッセージ</p>
+        """
 
         assert actual.status_code == 200
         assert actual.content_type == 'text/html'
 
         assert 'ハム' in actual.text
-        assert 'スパム さん' in actual.text
+        assert 'あ さん' in actual.text
         assert 'メッセージ' in actual.text
 
 
-    @pytest.mark.xfail
     def test_post(self):
         """直接POSTするテスト"""
         sut = TestApp(bottle_app.app)
@@ -43,15 +50,24 @@ class Test_bottle_app(object):
             {'title': 'ハム', 'handle': 'スパム', 'message': 'メッセージ'},
             content_type='application/x-www-form-urlencoded; charset=UTF-8 ')
 
-        # https://github.com/Pylons/webtest/issues/150
         print(actual.text)
-        """結果：文字化けしている
+        """bottleでrequest.forms.get()を使った時の結果：
+        文字化けしている
         <p>
             <span class="title">「ãã 」</span>&nbsp;&nbsp;
             <span class="handle">ã さん</span>&nbsp;&nbsp
             <span class="created_at">2017-03-26 10:58:14.466710</span>
         </p>
         <p class="message">ã¡ãã»ã¼ã¸</p>
+        """
+        """bottleでrequest.forms.getunicode()を使った時の結果：
+        文字化けしない
+        <p>
+            <span class="title">「ハム」</span>&nbsp;&nbsp;
+            <span class="handle">スパム さん</span>&nbsp;&nbsp
+            <span class="created_at">2017-04-09 12:29:34.556770</span>
+        </p>
+        <p class="message">メッセージ</p>
         """
 
         assert actual.status_code == 200
@@ -63,10 +79,7 @@ class Test_bottle_app(object):
 
 
     def test_post_json(self):
-        """JSONをポストするテスト
-
-        formのsubmitとは異なり、日本語が入っていても大丈夫
-        """
+        """JSONをポストするテスト"""
         # 直ったっぽい
         # https://github.com/Pylons/webtest/issues/177
         sut = TestApp(bottle_app.app)

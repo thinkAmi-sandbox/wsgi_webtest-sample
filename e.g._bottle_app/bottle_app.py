@@ -23,9 +23,10 @@ def get_top():
 def post_top():
     print(request.forms.get('handle'))
     message = Message(
-        title=request.forms.get('title'),
-        handle=request.forms.get('handle'),
-        message=request.forms.get('message'),
+        # get()だと文字化けするため、getunicode()を使う
+        title=request.forms.getunicode('title'),
+        handle=request.forms.getunicode('handle'),
+        message=request.forms.getunicode('message'),
     )
     return jinja2_template('bbs', message=message)
 
